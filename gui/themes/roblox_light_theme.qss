@@ -1,0 +1,64 @@
+/* Ventana principal */
+QWidget {
+    background-color: #F2F2F2; /* Fondo principal muy claro, casi blanco */
+}
+
+/* Pantalla de la calculadora */
+QLineEdit {
+    background-color: #FFFFFF; /* Pantalla blanca */
+    border: 2px solid #D1D1D1;
+    border-radius: 5px;
+    color: #2A2C2E; /* Texto oscuro */
+    padding: 10px;
+}
+
+/* Botones generales (números) */
+QPushButton {
+    background-color: #FFFFFF; /* Botones blancos */
+    color: #2A2C2E; /* Texto oscuro */
+    border: 1px solid #D1D1D1; /* Borde sutil para definir la forma */
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+QPushButton:hover {
+    background-color: #E8E8E8; /* Se oscurece un poco al pasar el mouse */
+}
+
+QPushButton:pressed {
+    background-color: #D1D1D1; /* Aún más oscuro al presionar */
+}
+
+/* Botones de operación (Mantenemos el rojo icónico de Roblox) */
+QPushButton[text='÷'],
+QPushButton[text='x'],
+QPushButton[text='-'],
+QPushButton[text='+'],
+QPushButton[text='='] {
+    background-color: #DA232A; /* Rojo de Roblox */
+    color: #FFFFFF; /* Texto blanco para que contraste */
+    border: 1px solid #B81E23;
+}
+
+QPushButton[text='÷']:hover,
+QPushButton[text='x']:hover,
+QPushButton[text='-']:hover,
+QPushButton[text='+']:hover,
+QPushButton[text='=']:hover {
+    background-color: #E74C52;
+}
+
+/* Botones de funciones (C, ⌫, %) */
+QPushButton[text='C'],
+QPushButton[text='⌫'],
+QPushButton[text='%'] {
+    background-color: #D1D1D1; /* Gris claro para funciones */
+    color: #2A2C2E;
+}
+
+/* Botón para cambiar de tema */
+#ThemeButton {
+    background-color: #E8E8E8;
+    border-radius: 25px;
+    border: 1px solid #D1D1D1;
+}
