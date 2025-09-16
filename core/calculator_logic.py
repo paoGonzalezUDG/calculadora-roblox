@@ -1,6 +1,6 @@
-# core/calculator_logic.py
-
 from decimal import Decimal, InvalidOperation
+from fractions import Fraction
+import re
 
 class CalculatorLogic:
     """Maneja todas las operaciones y el estado de la calculadora."""
@@ -27,18 +27,36 @@ class CalculatorLogic:
         """
         if not self.current_expression:
             return ""
-            
+        
+        expression_to_eval = self.current_expression.replace('x', '*').replace('÷', '/')
+
+        # --- LÓGICA DE FRACCIONES ---
+        if '/' in expression_to_eval and '÷' not in self.current_expression:
+            try:
+                # Convierte "1/2" a "Fraction(1, 2)"
+                expression_with_fractions = re.sub(r'(\d+)/(\d+)', r'Fraction(\1, \2)', expression_to_eval)
+                
+                result = eval(expression_with_fractions, {"Fraction": Fraction})
+
+                if result.denominator == 1:
+                    formatted_result = str(result.numerator)
+                else:
+                    formatted_result = f"{result.numerator}/{result.denominator}"
+                
+                self.current_expression = formatted_result
+                return self.current_expression
+            except Exception as e:
+                print(f"Error en el cálculo de fracciones: {e}")
+                self.current_expression = ""
+                return "Error"
+        # --- FIN DE LÓGICA DE FRACCIONES ---
+
         try:
-            # Reemplazamos símbolos para que Python los entienda
-            # Puedes expandir esto para más operaciones (ej. ^ para potencia)
-            expression_to_eval = self.current_expression.replace('x', '*').replace('÷', '/')
-            
-            # Usar Decimal para precisión financiera y evitar errores de punto flotante
             result = Decimal(eval(expression_to_eval))
-            
-            # Formatear el resultado para quitar ceros innecesarios al final
-            self.current_expression = str(result.normalize())
+            formatted_result = f'{result.normalize():f}'
+
+            self.current_expression = formatted_result
             return self.current_expression
         except (SyntaxError, ZeroDivisionError, InvalidOperation):
-            self.current_expression = "" # Limpiar en caso de error
+            self.current_expression = ""
             return "Error"
