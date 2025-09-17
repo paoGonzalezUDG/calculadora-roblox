@@ -3,7 +3,6 @@ from PyQt6.QtGui import QPainter, QPixmap, QPen, QColor, QFont, QMovie, QTextDoc
 from PyQt6.QtCore import Qt, QPointF
 
 class VisualizerWidget(QWidget):
-    """Un widget que dibuja una representación gráfica de una operación matemática."""
 
     def __init__(self):
         super().__init__()

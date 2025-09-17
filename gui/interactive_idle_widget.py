@@ -3,7 +3,6 @@ from PyQt6.QtGui import QPainter, QPixmap, QColor, QFont, QKeyEvent, QPen, QText
 from PyQt6.QtCore import Qt, QTimer, QRect
 
 class InteractiveIdleWidget(QWidget):
-    """Un minijuego interactivo de correr y saltar con temática de Roblox."""
     
     def __init__(self, oof_sound=None):
         super().__init__()
@@ -96,7 +95,6 @@ class InteractiveIdleWidget(QWidget):
                 self.player_y = self.ground_level
                 self.is_jumping = False
         
-        # CORRECCIÓN 1: Alinear obstáculo con el jugador
         obstacle_y_pos = self.ground_y - self.obstacle_height
         player_rect = QRect(self.player_x, self.player_y, self.player_width, self.player_height)
         obstacle_rect = QRect(self.obstacle_x, obstacle_y_pos, self.obstacle_width, self.obstacle_height)
@@ -121,7 +119,6 @@ class InteractiveIdleWidget(QWidget):
         if self.player_pixmap and not self.player_pixmap.isNull():
             painter.drawPixmap(self.player_x, self.player_y, self.player_width, self.player_height, self.player_pixmap)
         if self.obstacle_pixmap and not self.obstacle_pixmap.isNull():
-            # CORRECCIÓN 1: Alinear obstáculo con el jugador
             obstacle_y_pos = self.ground_y - self.obstacle_height
             painter.drawPixmap(self.obstacle_x, obstacle_y_pos, self.obstacle_width, self.obstacle_height, self.obstacle_pixmap)
 
@@ -138,7 +135,6 @@ class InteractiveIdleWidget(QWidget):
         
         if self.game_over:
             text_height = doc.size().height()
-            # CORRECCIÓN 2: Subir el texto de "Game Over"
             y_pos = ((self.height() - text_height) / 2) - 40
             painter.translate(10, y_pos)
         else:

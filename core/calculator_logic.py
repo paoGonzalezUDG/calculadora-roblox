@@ -30,7 +30,7 @@ class CalculatorLogic:
         
         expression_to_eval = self.current_expression.replace('x', '*').replace('÷', '/')
 
-        # --- LÓGICA DE FRACCIONES ---
+        # --- Fracciones ---
         if '/' in expression_to_eval and '÷' not in self.current_expression:
             try:
                 # Convierte "1/2" a "Fraction(1, 2)"
@@ -49,7 +49,7 @@ class CalculatorLogic:
                 print(f"Error en el cálculo de fracciones: {e}")
                 self.current_expression = ""
                 return "Error"
-        # --- FIN DE LÓGICA DE FRACCIONES ---
+        # --- Fin Fracciones ---
 
         try:
             result = Decimal(eval(expression_to_eval))
