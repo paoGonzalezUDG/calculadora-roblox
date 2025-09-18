@@ -3,6 +3,7 @@ from PyQt6.QtGui import QPainter, QPixmap, QColor, QFont, QKeyEvent, QPen, QText
 from PyQt6.QtCore import Qt, QTimer, QRect
 
 class InteractiveIdleWidget(QWidget):
+    """Un minijuego interactivo de correr y saltar con temática de Roblox."""
     
     def __init__(self, oof_sound=None):
         super().__init__()
@@ -15,15 +16,15 @@ class InteractiveIdleWidget(QWidget):
 
         # Mejoras de diseño y juego
         self.player_width = 50
-        self.player_height = 60
+        self.player_height = 65
         
         self.player_x = 50
         self.player_y = self.height()
         self.player_velocity_y = 0
         self.gravity = 1
-        self.jump_strength = -14 
+        self.jump_strength = -16 # Salto más alto 
         self.is_jumping = False
-        self.ground_level = 0
+        self.ground_y = 0
 
         self.obstacle_x = self.width()
         self.obstacle_width = 30
@@ -33,7 +34,7 @@ class InteractiveIdleWidget(QWidget):
         self.score = 0
         self.game_over = False
         self.is_active = False
-        self.message = "Presiona ESPACIO para jugar"
+        self.message = "Presiona ESPACIO o 'Jugar' para empezar"
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_game_state)
@@ -46,20 +47,18 @@ class InteractiveIdleWidget(QWidget):
         if not self.is_active:
             self.is_active = True
             self.restart_game()
-            self.message = ""
 
     def stop_game(self):
         self.is_active = False
-        self.game_over = False
         self.timer.stop()
-        self.message = "Juego en pausa. ¡Resuelve la misión!"
+        self.message = "¡Misión Activa!"
         self.update()
 
     def resizeEvent(self, event):
         self.ground_y = self.height() - 10
-        self.ground_level = self.ground_y - self.player_height
         if not self.is_jumping:
-            self.player_y = self.ground_level
+            # Ajustar la posición Y del jugador para que esté sobre el césped
+            self.player_y = self.ground_y - self.player_height + 5
         super().resizeEvent(event)
 
     def jump(self):
@@ -72,7 +71,8 @@ class InteractiveIdleWidget(QWidget):
     def restart_game(self):
         self.score = 0
         self.obstacle_x = self.width()
-        self.player_y = self.ground_level
+        # Ajustar la posición Y del jugador al reiniciar
+        self.player_y = self.ground_y - self.player_height + 5
         self.is_jumping = False
         self.game_over = False
         self.is_active = True
@@ -91,11 +91,14 @@ class InteractiveIdleWidget(QWidget):
         if self.is_jumping:
             self.player_y += self.player_velocity_y
             self.player_velocity_y += self.gravity
-            if self.player_y >= self.ground_level:
-                self.player_y = self.ground_level
+            player_bottom = self.ground_y - self.player_height + 5
+            if self.player_y >= player_bottom:
+                # Asegurar que el jugador aterrice en la posición correcta
+                self.player_y = player_bottom
                 self.is_jumping = False
         
-        obstacle_y_pos = self.ground_y - self.obstacle_height
+        # Posición Y del obstáculo
+        obstacle_y_pos = self.ground_y - self.obstacle_height + 5
         player_rect = QRect(self.player_x, self.player_y, self.player_width, self.player_height)
         obstacle_rect = QRect(self.obstacle_x, obstacle_y_pos, self.obstacle_width, self.obstacle_height)
 
@@ -119,7 +122,8 @@ class InteractiveIdleWidget(QWidget):
         if self.player_pixmap and not self.player_pixmap.isNull():
             painter.drawPixmap(self.player_x, self.player_y, self.player_width, self.player_height, self.player_pixmap)
         if self.obstacle_pixmap and not self.obstacle_pixmap.isNull():
-            obstacle_y_pos = self.ground_y - self.obstacle_height
+            # Usar la posición Y del obstáculo calculada
+            obstacle_y_pos = self.ground_y - self.obstacle_height + 5
             painter.drawPixmap(self.obstacle_x, obstacle_y_pos, self.obstacle_width, self.obstacle_height, self.obstacle_pixmap)
 
         painter.save()
@@ -135,7 +139,8 @@ class InteractiveIdleWidget(QWidget):
         
         if self.game_over:
             text_height = doc.size().height()
-            y_pos = ((self.height() - text_height) / 2) - 40
+            # Mover el texto "Game Over" más abajo
+            y_pos = ((self.height() - text_height) / 2) 
             painter.translate(10, y_pos)
         else:
             painter.translate(10, 30) 

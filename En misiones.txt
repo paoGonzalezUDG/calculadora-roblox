@@ -3,5 +3,9 @@ En misiones
 	mapa tipo candy crush
 	poner una barra de 3 vidas
 3 niveles en la fuente roblox
-En ventana Correcto, poner el gif baile Roblox
-al presionar cualquier tecla se activa una animación (objeto chispitas o alas roblox)
+
+
+
+
+Bugs
+1. 
