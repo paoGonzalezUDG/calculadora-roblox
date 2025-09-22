@@ -3,6 +3,19 @@ QWidget {
     background-color: #393B3D;
 }
 
+QWidget#Header {
+    background-color: #1E1E1E;
+    border-bottom: 2px solid #2A2C2E;
+    padding: 5px;
+}
+
+QLabel#RobuxLabel {
+    font-size: 14pt;
+    color: #00FF85;
+    font-weight: bold;
+}
+
+
 /* Pantalla de la calculadora */
 QLineEdit {
     background-color: #63676B;
@@ -16,13 +29,14 @@ QLineEdit {
 QPushButton {
     background-color: #4D5054;
     color: #FFFFFF;
-    border: 1px solid #2A2C2E;
-    border-radius: 5px;
+    border: 2px solid #2A2C2E;
+    border-radius: 8px;
     font-weight: bold;
 }
 
 QPushButton:hover {
     background-color: #63676B;
+    border: 2px solid #FFFFFF;
 }
 
 QPushButton:pressed {
@@ -31,10 +45,12 @@ QPushButton:pressed {
 
 /* Botones de operación */
 QPushButton[text='÷'],
+QPushButton[text='/'],
 QPushButton[text='x'],
 QPushButton[text='-'],
 QPushButton[text='+'],
-QPushButton[text='='] {
+QPushButton[text='='],
+QPushButton[text='a/b'] {
     background-color: #DA232A;
     color: #FFFFFF;
 }
@@ -43,15 +59,17 @@ QPushButton[text='÷']:hover,
 QPushButton[text='x']:hover,
 QPushButton[text='-']:hover,
 QPushButton[text='+']:hover,
-QPushButton[text='=']:hover {
+QPushButton[text='=']:hover,
+QPushButton[text='a/b']:hover {
     background-color: #E74C52;
 }
 
 /* Botones de funciones (C, ⌫, %) */
 QPushButton[text='C'],
 QPushButton[text='⌫'],
-QPushButton[text='%'] {
-    background-color: #63676B;
+QPushButton[text='%'],
+QPushButton[text='.'] {
+    background-color: #707478ff;
     color: #FFFFFF;
 }
 
@@ -64,30 +82,34 @@ QPushButton[text='%'] {
 
 #MissionLabel {
     font-size: 12pt;
-    color: #FFFFFF;
-    background-color: #63676B;
-    border-radius: 5px;
-    padding: 10px;
+    color: #FFD83D;
+    background-color: #2E2E2E;
+    border: 2px solid #FFD83D;
+    border-radius: 8px;
+    padding: 12px;
     min-height: 80px;
 }
 
 #NewMissionButton,
 #PlayGameButton {
     color: #FFFFFF;
-    font-size: 14pt;
+    font-size: 12pt;
     padding: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 10px;
 }
 #NewMissionButton {
     background-color: #00A2FF;
 }
 #NewMissionButton:hover {
-    background-color: #33B5FF;
+    background-color: #00D0FF;
 }
 #PlayGameButton {
-    background-color: #4CAF50;
+    background-color: #28A745;
 }
 #PlayGameButton:hover {
-    background-color: #66BB6A;
+    background-color: #36D14F;
 }
 #VisualizerPanel {
     background-color: #2A2C2E;

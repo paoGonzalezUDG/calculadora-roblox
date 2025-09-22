@@ -86,12 +86,12 @@ class CustomDefeatDialog(QDialog):
         self.gif_label = QLabel(self)
         self.gif_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         try:
-            self.movie = QMovie("assets/images/defeat.gif")
+            self.movie = QMovie("assets/images/defeat.webp")
             self.movie.setScaledSize(QSize(200, 200))
             self.gif_label.setMovie(self.movie)
             self.movie.start()
         except Exception as e:
-            print(f"Error al cargar defeat.gif: {e}")
+            print(f"Error al cargar defeat.webp: {e}")
             self.gif_label.setText("❌") # Emoji de respaldo
 
         self.title_label = QLabel("¡INCORRECTO!", self)
