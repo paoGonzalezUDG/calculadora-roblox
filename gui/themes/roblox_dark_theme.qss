@@ -1,6 +1,7 @@
 /* Ventana principal */
 QWidget {
-    background-color: #393B3D;
+    background-color: #1e1e1e;
+    color: #f5f5f5;
 }
 
 QWidget#Header {
@@ -15,7 +16,6 @@ QLabel#RobuxLabel {
     font-weight: bold;
 }
 
-
 /* Pantalla de la calculadora */
 QLineEdit {
     background-color: #63676B;
@@ -27,15 +27,16 @@ QLineEdit {
 
 /* Botones generales (números) */
 QPushButton {
-    background-color: #4D5054;
-    color: #FFFFFF;
-    border: 2px solid #2A2C2E;
-    border-radius: 8px;
+    background-color: #2c2c2c;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: #ffffff;
+    padding: 5px;
     font-weight: bold;
 }
 
 QPushButton:hover {
-    background-color: #63676B;
+    background-color: #3a3a3a;
     border: 2px solid #FFFFFF;
 }
 
@@ -44,41 +45,36 @@ QPushButton:pressed {
 }
 
 /* Botones de operación */
-QPushButton[text='÷'],
-QPushButton[text='/'],
-QPushButton[text='x'],
-QPushButton[text='-'],
-QPushButton[text='+'],
-QPushButton[text='='],
-QPushButton[text='a/b'] {
+QPushButton[role="operator"] {
     background-color: #DA232A;
     color: #FFFFFF;
 }
 
-QPushButton[text='÷']:hover,
-QPushButton[text='x']:hover,
-QPushButton[text='-']:hover,
-QPushButton[text='+']:hover,
-QPushButton[text='=']:hover,
-QPushButton[text='a/b']:hover {
+QPushButton[role="operator"]:hover {
     background-color: #E74C52;
 }
 
 /* Botones de funciones (C, ⌫, %) */
-QPushButton[text='C'],
-QPushButton[text='⌫'],
-QPushButton[text='%'],
-QPushButton[text='.'] {
+QPushButton[role="function"] {
     background-color: #707478ff;
     color: #FFFFFF;
 }
 
+QPushButton[role="function"]:hover {
+    background-color: #8f959aff;
+}
+
 /* Botón para cambiar de tema */
 #ThemeButton {
-    background-color: #4D5054;
-    border-radius: 25px;
-    border: 1px solid #2A2C2E;
+    background-color: #0078d7;
 }
+
+QPushButton#settingsButton {        
+    background-color: #8a2be2;
+}
+QPushButton#nightModeButton {
+    background-color: #e6b800;
+}           
 
 #MissionLabel {
     font-size: 12pt;

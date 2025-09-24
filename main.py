@@ -10,29 +10,33 @@ SETTINGS_FILE = 'settings.json'
 
 def get_user_settings():
     """Carga las configuraciones del usuario. Si no existen, las solicita."""
+    default_settings = {'handedness': 'right', 'sound_muted': False}
+    
     if not os.path.exists(SETTINGS_FILE):
-        # El archivo no existe, hay que preguntar al usuario
         dialog = HandednessDialog()
         if dialog.exec():
             handedness = dialog.selection
-            settings = {'handedness': handedness}
+            settings = {'handedness': handedness, 'sound_muted': False}
             try:
                 with open(SETTINGS_FILE, 'w') as f:
-                    json.dump(settings, f)
+                    json.dump(settings, f, indent=4)
+                return settings
             except IOError as e:
                 print(f"Error al guardar las configuraciones: {e}")
-            return settings
+                return default_settings
         else:
-            # Si el usuario cierra el diálogo, usar el valor por defecto
-            return {'handedness': 'right'}
+            return default_settings
     else:
-        # El archivo existe, cargar la configuración
         try:
             with open(SETTINGS_FILE, 'r') as f:
-                return json.load(f)
+                settings = json.load(f)
+                if 'handedness' not in settings:
+                    settings['handedness'] = 'right'
+                if 'sound_muted' not in settings:
+                    settings['sound_muted'] = False
+                return settings
         except (IOError, json.JSONDecodeError):
-            # Si el archivo está corrupto, empezar de nuevo
-            return {'handedness': 'right'}
+            return default_settings
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -46,12 +50,9 @@ if __name__ == '__main__':
         font_families = QFontDatabase.applicationFontFamilies(font_id)
         print(f"Fuente '{font_families[0]}' cargada exitosamente.")
 
-    # Obtener la preferencia del usuario
     user_settings = get_user_settings()
-    handedness_preference = user_settings.get('handedness', 'right')
-
-    # Pasar la preferencia a la ventana principal
-    window = MainWindow(handedness=handedness_preference)
+    
+    window = MainWindow(settings=user_settings)
     window.show()
     sys.exit(app.exec())
 

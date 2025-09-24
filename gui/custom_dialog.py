@@ -47,7 +47,6 @@ class CustomVictoryDialog(QDialog):
 
         self.setStyleSheet("""
             QDialog {
-                background-color: #393B3D;
                 border: 2px solid #DA232A;
                 border-radius: 10px;
             }
@@ -86,12 +85,12 @@ class CustomDefeatDialog(QDialog):
         self.gif_label = QLabel(self)
         self.gif_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         try:
-            self.movie = QMovie("assets/images/defeat.webp")
+            self.movie = QMovie("assets/images/defeat.png")
             self.movie.setScaledSize(QSize(200, 200))
             self.gif_label.setMovie(self.movie)
             self.movie.start()
         except Exception as e:
-            print(f"Error al cargar defeat.webp: {e}")
+            print(f"Error al cargar defeat.png: {e}")
             self.gif_label.setText("❌") # Emoji de respaldo
 
         self.title_label = QLabel("¡INCORRECTO!", self)
@@ -113,7 +112,6 @@ class CustomDefeatDialog(QDialog):
 
         self.setStyleSheet("""
             QDialog {
-                background-color: #393B3D;
                 border: 2px solid #FFCC00; /* Borde amarillo para advertencia */
                 border-radius: 10px;
             }

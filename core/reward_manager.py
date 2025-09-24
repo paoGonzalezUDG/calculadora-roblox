@@ -13,7 +13,7 @@ class RewardManager:
             try:
                 with open(self.save_file, 'r') as f:
                     loaded_data = json.load(f)
-                    # Asegurarse de que las claves existan para evitar errores
+                    
                     if "rewards" not in loaded_data:
                         loaded_data["rewards"] = {"oof_sound": False}
                     if "total_robux" not in loaded_data:
@@ -22,7 +22,7 @@ class RewardManager:
             except (json.JSONDecodeError, IOError):
                 return {"rewards": {"oof_sound": False}, "total_robux": 0}
         else:
-            # Estado inicial de los datos
+            
             return {"rewards": {"oof_sound": False}, "total_robux": 0}
 
     def _save_data(self):
@@ -43,7 +43,6 @@ class RewardManager:
         """Comprueba si una recompensa está desbloqueada."""
         return self.data["rewards"].get(reward_id, False)
     
-    # --- FUNCIONES PARA ROBUX ---
     def add_robux(self, amount):
         """Añade o resta una cantidad de Robux al total y guarda."""
         current_robux = self.data.get("total_robux", 0)

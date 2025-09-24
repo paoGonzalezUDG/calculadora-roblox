@@ -22,7 +22,7 @@ class AnimatedButton(QPushButton):
         )
         self.animation_label.show()
         self.movie.start()
-        # CORRECCIÓN: El método correcto en PyQt6 es setLoopCount
+        
         self.movie.setLoopCount(1) # Reproducir solo una vez
         self.movie.finished.connect(self.stop_animation)
 
@@ -30,3 +30,4 @@ class AnimatedButton(QPushButton):
         """Detiene y oculta la animación."""
         self.movie.stop()
         self.animation_label.hide()
+

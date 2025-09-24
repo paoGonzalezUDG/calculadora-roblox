@@ -1,22 +1,9 @@
-En misiones
 
-	poner una barra de 3 vidas
-	3 niveles en la fuente roblox
-
-	después de juntar 3 puntos poner audio sonido misión completa san andres
-	variar personaje de noob en minijuego cada que se inicie la calculadora
-		- Poe
-		- Mario bros
-
-corregir qss
-
-
-
-Bugs
-
-Articulos
 
 https://elicit.com/review/1b0684a8-d3d1-490c-ab60-124055773cd6
+
 https://www.researchgate.net/publication/380653914_Application_of_universal_design_principles_on_computer_mouse_interface_developing_a_universal_mouse_pointing_and_control_system_to_provide_affordance_to_the_left-handed_users
+
 https://www.researchgate.net/profile/Juan-Hernandez-Arellano/publication/290193056_Analisis_de_las_necesidades_de_diseno_de_productos_y_herramientas_para_personas_zurdas/links/56953e7a08ae820ff074ad7e/Analisis-de-las-necesidades-de-diseno-de-productos-y-herramientas-para-personas-zurdas.pdf
+
 https://d1wqtxts1xzle7.cloudfront.net/97435206/414-libre.pdf?1673986522=&response-content-disposition=inline%3B+filename%3DPropuesta_De_Una_Metodologia_Para_El_Dis.pdf&Expires=1758424823&Signature=UHHeFm3fsyiN-GUyYafHb1JZcAOLi263s0Lq88ztEJ9X6XXW3ejetRGvlK0b1rduIefFQo65Z4Baxd0TbPs1OUkRKUj~hqdgPpp7sTcSdGSSRcVyu0Mum0oafVLxIYhyOwJ4hduMiQvdCRnFT-8D2uvVqgZRVZBvcQDzm9ZLmnl908onSBdxemPvyImK0hGSmr-2OUNxMon8wqSMoYodW-aM1MEm791hVb8ZFa2uh-2SGL1vNKS8Kblf1rnyHMC1yZ7qqbj2HtSX5XC-LXxHQFaR1glPzxCbzfisyy6FltntzIZHeY9tKTVYVlP7e53yR732zoDT8hSOUSSGfT0xeQ__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA

@@ -1,64 +1,117 @@
 /* Ventana principal */
 QWidget {
-    background-color: #F2F2F2; /* Fondo principal muy claro, casi blanco */
+    background-color: #f5f5f5;
+    color: #222;
+}
+
+QWidget#Header {
+    background-color: #f5f5f5;
+    border-bottom: 2px solid #222;
+    padding: 5px;
+}
+
+QLabel#RobuxLabel {
+    font-size: 14pt;
+    color: #00FF85;
+    font-weight: bold;
 }
 
 /* Pantalla de la calculadora */
 QLineEdit {
-    background-color: #FFFFFF; /* Pantalla blanca */
-    border: 2px solid #D1D1D1;
+    background-color: #FFFFFF;
+    border: 2px solid #CCCCCC;
     border-radius: 5px;
-    color: #2A2C2E; /* Texto oscuro */
+    color: #000000;
     padding: 10px;
 }
 
 /* Botones generales (números) */
 QPushButton {
-    background-color: #FFFFFF; /* Botones blancos */
-    color: #2A2C2E; /* Texto oscuro */
-    border: 1px solid #D1D1D1; /* Borde sutil para definir la forma */
-    border-radius: 5px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    color: #000;
+    padding: 5px;
     font-weight: bold;
 }
 
 QPushButton:hover {
-    background-color: #E8E8E8; /* Se oscurece un poco al pasar el mouse */
+    background-color: #eaeaea;
+    border: 2px solid #3a3a3a;
 }
 
-QPushButton:pressed {
-    background-color: #D1D1D1; /* Aún más oscuro al presionar */
+QPushButton:pressed { 
+    background-color: #C0C0C0; 
 }
 
-/* Botones de operación (Mantenemos el rojo icónico de Roblox) */
-QPushButton[text='÷'],
-QPushButton[text='x'],
-QPushButton[text='-'],
-QPushButton[text='+'],
-QPushButton[text='='] {
-    background-color: #DA232A; /* Rojo de Roblox */
-    color: #FFFFFF; /* Texto blanco para que contraste */
-    border: 1px solid #B81E23;
+/* Botones de operación */
+QPushButton[role="operator"] {
+    background-color: #FF5C5C;
+    color: #FFFFFF;
 }
 
-QPushButton[text='÷']:hover,
-QPushButton[text='x']:hover,
-QPushButton[text='-']:hover,
-QPushButton[text='+']:hover,
-QPushButton[text='=']:hover {
-    background-color: #E74C52;
+QPushButton[role="operator"]:hover {
+    background-color: #FF7A7A;
 }
 
 /* Botones de funciones (C, ⌫, %) */
-QPushButton[text='C'],
-QPushButton[text='⌫'],
-QPushButton[text='%'] {
-    background-color: #D1D1D1; /* Gris claro para funciones */
-    color: #2A2C2E;
+QPushButton[role="function"] {
+    background-color: #797d82ff;
+    color: #000000;
+}
+
+QPushButton[role="function"]:hover {
+    background-color: #9ca4abff;
 }
 
 /* Botón para cambiar de tema */
 #ThemeButton {
-    background-color: #E8E8E8;
-    border-radius: 25px;
-    border: 1px solid #D1D1D1;
+    background-color: #0078d7;
+}
+
+QPushButton#settingsButton {
+    background-color: #8a2be2;
+}
+
+QPushButton#nightModeButton {
+    background-color: #e6b800;
+}
+
+#MissionLabel {
+    font-size: 12pt;
+    color: #FFD83D;
+    background-color: #2E2E2E;
+    border: 2px solid #FFD83D;
+    border-radius: 8px;
+    padding: 12px;
+    min-height: 80px;
+}
+
+#NewMissionButton,
+#PlayGameButton {
+    color: #FFFFFF;
+    font-size: 12pt;
+    padding: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 10px;
+}
+
+#NewMissionButton {
+    background-color: #00A2FF;
+}
+#NewMissionButton:hover {
+    background-color: #33B5FF; 
+}
+
+#PlayGameButton {
+    background-color: #4CAF50;
+}
+#PlayGameButton:hover { 
+    background-color: #66BB6A; 
+}
+#VisualizerPanel {
+    background-color: #EAEAEA;
+    border-radius: 8px;
+    padding: 10px;
 }

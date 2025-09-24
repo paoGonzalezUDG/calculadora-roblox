@@ -131,7 +131,7 @@ class VisualizerWidget(QWidget):
             start_x_num2 = 30
             
         self._draw_objects(painter, num2, start_x=start_x_num2, start_y=start_y_num2)
-        pen = QPen(QColor("#FFFFFF"), 2)
+        pen = QPen(QColor("#7e7e7e"), 2)
         painter.setPen(pen)
         painter.setFont(QFont("Gill Sans Ultra Bold", 20))
         plus_x = 25 + ((num1 - 1) % columns_used) * 40 + 40
@@ -154,7 +154,7 @@ class VisualizerWidget(QWidget):
 
     def _draw_multiplication(self, painter, num1, num2):
         num1_int, num2_int = int(num1), int(num2)
-        pen = QPen(QColor("#FFFFFF"), 2)
+        pen = QPen(QColor("#7E7E7E"), 2)
         painter.setPen(pen)
         painter.setFont(QFont("Gill Sans Ultra Bold", 10))
 
@@ -201,7 +201,7 @@ class VisualizerWidget(QWidget):
     def _draw_text_message(self, painter, message):
         """Muestra un mensaje de texto centrado y con ajuste de línea."""
         doc = QTextDocument()
-        doc.setHtml(f"<p style='color: white; font-size: 14pt; text-align: center;'>{message}</p>")
+        doc.setHtml(f"<p style='color: #7e7e7e; font-size: 14pt; text-align: center;'>{message}</p>")
         doc.setTextWidth(self.width() - 20)
         
         painter.save()
