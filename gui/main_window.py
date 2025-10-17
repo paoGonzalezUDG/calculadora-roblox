@@ -1,10 +1,10 @@
 import sys
 import pygame
 import time
-import json 
+import json
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QGridLayout, 
+from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QGridLayout,
                              QPushButton, QLineEdit, QHBoxLayout, QLabel,
                              QStackedWidget)
 from PyQt6.QtGui import QFont, QKeyEvent
@@ -28,13 +28,14 @@ SETTINGS_FILE = 'settings.json'
 
 class MainWindow(QMainWindow):
     """Ventana principal de la calculadora."""
-    
+
     def __init__(self, settings):
         super().__init__()
-        
+
         self.handedness = settings.get('handedness', 'right')
         self.sound_muted = settings.get('sound_muted', False)
-        
+        self.multiplication_method = settings.get('multiplication_method', 'traditional') # Cargar nuevo ajuste
+
         self.mission_engine = MissionEngine()
         self.reward_manager = RewardManager()
         self.history_logger = HistoryLogger()
@@ -56,10 +57,10 @@ class MainWindow(QMainWindow):
             self.oof_sound, self.fnaf_sound, self.bye_sound, self.mission_complete_sound, self.startup_sound, self.jump_sound, self.pop_sound, self.defeat_sound = [None]*8
 
         self.logic = CalculatorLogic()
-        self.setWindowTitle("Sofia calc")        
+        self.setWindowTitle("Sofia calc")
         self.resize(800, 600)
-        
-        self.current_theme = 'roblox_dark' 
+
+        self.current_theme = 'roblox_dark'
 
         self._rebuild_ui()
 
@@ -71,9 +72,9 @@ class MainWindow(QMainWindow):
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         self.main_h_layout = QHBoxLayout(self.central_widget)
-        
+
         self.calculator_panel = self._create_calculator_panel()
-        self.visualizer = VisualizerWidget()
+        self.visualizer = VisualizerWidget(multiplication_method=self.multiplication_method) # Pasar el ajuste
         self.visualizer.setObjectName("VisualizerPanel")
 
         if self.handedness == 'left':
@@ -88,18 +89,18 @@ class MainWindow(QMainWindow):
     def _create_calculator_panel(self):
         container = QWidget()
         self.left_v_layout = QVBoxLayout(container)
-        
+
         top_section_layout = self._create_display_and_control_buttons()
 
         self.game_mission_stack = QStackedWidget()
         self.mission_widget = InteractiveIdleWidget(
-            oof_sound=self.oof_sound, 
+            oof_sound=self.oof_sound,
             reward_manager=self.reward_manager,
             mission_complete_sound=self.mission_complete_sound,
             jump_sound=self.jump_sound
         )
         self.mission_widget.set_sound_muted(self.sound_muted)
-        
+
         self.mission_display_label = QLabel("¡Presiona 'Nueva Misión' o 'Jugar Minijuego'!")
         self.mission_display_label.setObjectName("MissionLabel")
         self.mission_display_label.setWordWrap(True)
@@ -124,7 +125,7 @@ class MainWindow(QMainWindow):
         self.left_v_layout.addWidget(self.game_mission_stack)
         self.left_v_layout.addLayout(mode_buttons_layout)
         self.left_v_layout.addLayout(buttons_layout)
-        
+
         self._apply_base_styles()
         return container
 
@@ -135,14 +136,17 @@ class MainWindow(QMainWindow):
                 with open(SETTINGS_FILE, 'r') as f:
                     settings = json.load(f)
                     self.sound_muted = settings.get('sound_muted', False)
+                    self.multiplication_method = settings.get('multiplication_method', 'traditional') # Recargar nuevo ajuste
                     self.mission_widget.set_sound_muted(self.sound_muted)
+                    self.visualizer.multiplication_method = self.multiplication_method # Actualizar visualizer
                     print(f"Configuración de sonido actualizada: {'Silenciado' if self.sound_muted else 'Activado'}")
+                    print(f"Método de multiplicación actualizado: {self.multiplication_method}")
             except (IOError, json.JSONDecodeError):
                 print("No se pudo recargar la configuración.")
 
     def _toggle_handedness(self):
         self.handedness = 'left' if self.handedness == 'right' else 'right'
-        
+
         try:
             with open(SETTINGS_FILE, 'r') as f:
                 settings = json.load(f)
@@ -151,9 +155,9 @@ class MainWindow(QMainWindow):
                 json.dump(settings, f, indent=4)
         except (IOError, json.JSONDecodeError):
              with open(SETTINGS_FILE, 'w') as f:
-                json.dump({'handedness': self.handedness, 'sound_muted': self.sound_muted}, f, indent=4)
+                json.dump({'handedness': self.handedness, 'sound_muted': self.sound_muted, 'multiplication_method': self.multiplication_method}, f, indent=4) # Guardar nuevo ajuste por defecto
         self._rebuild_ui()
-    
+
     def showEvent(self, event):
         if not self.sound_muted and self.startup_sound:
             self.startup_sound.play(maxtime=1500)
@@ -173,7 +177,7 @@ class MainWindow(QMainWindow):
     def _activate_mission_mode(self):
         self.mission_widget.stop_game()
         self.game_mission_stack.setCurrentWidget(self.mission_display_label)
-        
+
         self.current_mission = self.mission_engine.get_random_mission()
         self.mission_display_label.setText(self.current_mission["text"])
         self.logic.clear_expression()
@@ -208,7 +212,7 @@ class MainWindow(QMainWindow):
 
         if self.current_mission and text in "a/b+-x÷":
             self._return_to_paused_game("Misión cancelada. ¡Calculadora lista!")
-        
+
         if text == 'a/b':
             self.logic.add_to_expression('/')
             self.display.setText(self.logic.current_expression)
@@ -219,7 +223,7 @@ class MainWindow(QMainWindow):
             if self.current_mission:
                 user_answer = self.display.text()
                 is_correct = user_answer == self.current_mission["answer"]
-                
+
                 self.history_logger.log_mission_attempt(self.current_mission, user_answer, is_correct)
 
                 if is_correct:
@@ -247,14 +251,14 @@ class MainWindow(QMainWindow):
             result = self.logic.evaluate_expression()
             self.display.setText(result)
             self._update_visualizer(expression, result)
-        
+
         elif text == '⌫':
             if not self.sound_muted and self.reward_manager.is_unlocked("oof_sound") and self.oof_sound:
                 self.oof_sound.play()
             self.logic.delete_last()
             self.display.setText(self.logic.current_expression)
             self.visualizer.clear_all()
-        
+
         elif text == 'C':
             if not self.sound_muted and self.reward_manager.is_unlocked("oof_sound") and self.oof_sound:
                 self.oof_sound.play()
@@ -263,7 +267,7 @@ class MainWindow(QMainWindow):
             self.visualizer.clear_all()
             if self.current_mission:
                 self._return_to_paused_game("¡Presiona 'Jugar Minijuego' para empezar!")
-        
+
         else:
             if self.current_mission:
                 if text in "0123456789.":
@@ -283,14 +287,18 @@ class MainWindow(QMainWindow):
             match = re.search(r'(\d+\.?\d*)([+\-x÷])(\d+\.?\d*)', expression)
             if match:
                 num1, op, num2 = match.groups()
-                self.visualizer.update_visualization(float(num1), op, float(num2), float(result))
+                # Pasar el método de multiplicación actual al visualizador
+                if op == 'x':
+                    self.visualizer.update_visualization(float(num1), op, float(num2), float(result), multiplication_method=self.multiplication_method)
+                else:
+                    self.visualizer.update_visualization(float(num1), op, float(num2), float(result))
             else: self.visualizer.clear_all()
         else: self.visualizer.clear_all()
 
     def _create_buttons(self):
         buttons_layout = QGridLayout()
-        self.buttons = {} 
-        
+        self.buttons = {}
+
         if self.handedness == 'left':
             button_map = {
                 '÷':(0,0,1,1),'a/b':(0,1,1,1),'C':(0,2,1,1),'⌫':(0,3,1,1),
@@ -316,7 +324,7 @@ class MainWindow(QMainWindow):
                 button = AnimatedButton(text)
             else:
                 button = QPushButton(text)
-            
+
             button.setFont(QFont("Gill Sans Ultra Bold", 14))
             button.clicked.connect(self._on_button_click)
 
@@ -332,16 +340,16 @@ class MainWindow(QMainWindow):
             self.buttons[text] = button
 
         return buttons_layout
-    
+
     def _create_display_and_control_buttons(self):
         """Crea la pantalla y los botones de control en layouts separados."""
         # Layout principal de esta sección es vertical
         top_section_layout = QVBoxLayout()
         top_section_layout.setSpacing(5) # Espacio reducido entre botones y pantalla
-        
+
         # 1. Layout horizontal para los botones de control (ANTES de la pantalla)
         control_buttons_layout = QHBoxLayout()
-        
+
         self.handedness_button = QPushButton("↔️")
         self.handedness_button.setFixedSize(40, 40) # Tamaño reducido
         self.handedness_button.setObjectName("HandednessButton")
@@ -365,7 +373,7 @@ class MainWindow(QMainWindow):
         control_buttons_layout.addWidget(self.handedness_button)
         control_buttons_layout.addWidget(self.settings_button)
         control_buttons_layout.addWidget(self.theme_button)
-        
+
         # 2. Añadir el layout de botones al layout principal de la sección
         top_section_layout.addLayout(control_buttons_layout)
 
@@ -376,10 +384,10 @@ class MainWindow(QMainWindow):
         self.display.setReadOnly(True)
         self.display.setFont(QFont("Gill Sans Ultra Bold", 28))
         top_section_layout.addWidget(self.display)
-        
+
         return top_section_layout
 
-    def _toggle_theme(self):        
+    def _toggle_theme(self):
         if self.current_theme == 'roblox_dark':
             self.current_theme = 'roblox_light'
             self.theme_button.setText("🧱☀️")
@@ -389,10 +397,10 @@ class MainWindow(QMainWindow):
         else:
             self.current_theme = 'roblox_dark'
             self.theme_button.setText("🧱")
-            
+
         stylesheet_path = f'gui/themes/{self.current_theme}_theme.qss'
         self.load_stylesheet(stylesheet_path)
-    
+
     def _apply_base_styles(self):
         """Aplica estilos base a los botones que deben existir antes de llamar a esta función."""
         for button in self.buttons.values():
@@ -403,7 +411,7 @@ class MainWindow(QMainWindow):
             self.handedness_button.setObjectName("HandednessButton")
         if hasattr(self, 'settings_button'):
             self.settings_button.setObjectName("SettingsButton")
-    
+
     def load_stylesheet(self, file_path):
         try:
             with open(file_path, "r") as f: self.setStyleSheet(f.read())

@@ -1,5 +1,5 @@
 import json
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QCheckBox, QPushButton, QHBoxLayout, QMessageBox
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QCheckBox, QPushButton, QHBoxLayout, QMessageBox, QFrame, QWidget, QGroupBox, QRadioButton
 from PyQt6.QtCore import Qt
 
 SETTINGS_FILE = 'settings.json'
@@ -10,7 +10,7 @@ class SettingsDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Configuraciones")
         self.setModal(True)
-        self.setFixedSize(350, 180) # Tamaño ajustado para el nuevo botón
+        self.setMinimumSize(450, 280) # Aumentamos el tamaño mínimo para la nueva sección
 
         try:
             with open(SETTINGS_FILE, 'r') as f:
@@ -18,36 +18,102 @@ class SettingsDialog(QDialog):
         except (IOError, json.JSONDecodeError):
             self.settings = {}
 
-        layout = QVBoxLayout(self)
-        
-        # Opción para silenciar sonidos
+        # Layout principal
+        main_layout = QVBoxLayout(self)
+
+        # Layout de contenido (dividido en izquierda y derecha)
+        content_layout = QHBoxLayout()
+
+        # --- Panel Izquierdo ---
+        left_panel = QWidget()
+        left_layout = QVBoxLayout(left_panel)
+        left_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+        self.about_button = QPushButton("Acerca de")
+        self.about_button.clicked.connect(self._show_about_dialog)
+
+        self.history_button = QPushButton("Historial")
+        self.history_button.clicked.connect(self._show_history_dialog)
+
+        # Nuevo GroupBox para métodos de aprendizaje
+        self.multiplication_method_group = QGroupBox("Métodos de Multiplicación")
+        self.multiplication_method_group.setObjectName("MultiplicationMethodGroup")
+        method_layout = QVBoxLayout()
+
+        self.traditional_radio = QRadioButton("Tradicional (Grupos)")
+        self.traditional_radio.setObjectName("TraditionalRadio")
+        self.japanese_radio = QRadioButton("Japonés (Líneas)")
+        self.japanese_radio.setObjectName("JapaneseRadio")
+
+        method_layout.addWidget(self.traditional_radio)
+        method_layout.addWidget(self.japanese_radio)
+        self.multiplication_method_group.setLayout(method_layout)
+
+        # Establecer selección inicial
+        current_method = self.settings.get('multiplication_method', 'traditional')
+        if current_method == 'japanese':
+            self.japanese_radio.setChecked(True)
+        else:
+            self.traditional_radio.setChecked(True)
+
+        left_layout.addWidget(self.about_button)
+        left_layout.addWidget(self.history_button)
+        left_layout.addWidget(self.multiplication_method_group) # Añadir el nuevo grupo
+
+        # --- Separador Vertical ---
+        separator = QFrame()
+        separator.setFrameShape(QFrame.Shape.VLine)
+        separator.setFrameShadow(QFrame.Shadow.Sunken)
+
+        # --- Panel Derecho ---
+        right_panel = QWidget()
+        right_layout = QVBoxLayout(right_panel)
+        right_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
         self.mute_checkbox = QCheckBox("Silenciar todos los sonidos")
         is_muted = self.settings.get('sound_muted', False)
         self.mute_checkbox.setChecked(is_muted)
-        layout.addWidget(self.mute_checkbox)
-        
-        layout.addStretch()
 
-        buttons_layout = QHBoxLayout()
-        
-        self.about_button = QPushButton("Acerca de")
-        self.about_button.clicked.connect(self._show_about_dialog)
-        buttons_layout.addWidget(self.about_button)
+        right_layout.addWidget(self.mute_checkbox)
 
-        buttons_layout.addStretch() # Empuja los botones de guardar/cancelar a la derecha
-        
-        self.save_button = QPushButton("Guardar")
-        self.save_button.clicked.connect(self.save_and_accept)
-        
+        # Añadir paneles al layout de contenido
+        content_layout.addWidget(left_panel)
+        content_layout.addWidget(separator)
+        content_layout.addWidget(right_panel)
+
+        # --- Layout de botones inferiores ---
+        bottom_buttons_layout = QHBoxLayout()
+        bottom_buttons_layout.addStretch() # Empuja los botones a la derecha
+
         self.cancel_button = QPushButton("Cancelar")
         self.cancel_button.clicked.connect(self.reject)
 
-        buttons_layout.addWidget(self.cancel_button)
-        buttons_layout.addWidget(self.save_button)
-        
-        layout.addLayout(buttons_layout)
-        
-        self.setStyleSheet(parent.styleSheet())
+        self.save_button = QPushButton("Guardar")
+        self.save_button.clicked.connect(self.save_and_accept)
+
+        bottom_buttons_layout.addWidget(self.cancel_button)
+        bottom_buttons_layout.addWidget(self.save_button)
+
+        # Añadir todo al layout principal
+        main_layout.addLayout(content_layout)
+        main_layout.addStretch()
+        main_layout.addLayout(bottom_buttons_layout)
+
+        if parent:
+            self.setStyleSheet(parent.styleSheet())
+
+        # Ajustes de estilo adicionales si son necesarios
+        self.about_button.setMinimumHeight(35)
+        self.history_button.setMinimumHeight(35)
+        self.multiplication_method_group.setMinimumHeight(100) # Ajustar altura del grupo
+        self.traditional_radio.setStyleSheet("QRadioButton { color: white; }")
+        self.japanese_radio.setStyleSheet("QRadioButton { color: white; }")
+
+    def _show_history_dialog(self):
+        """Crea y muestra el diálogo del historial."""
+        from gui.history_dialog import HistoryDialog # Importación local para evitar circular
+        history_dialog = HistoryDialog(self)
+        history_dialog.exec()
 
     def _show_about_dialog(self):
         """Muestra una ventana emergente con la información 'Acerca de'."""
@@ -64,7 +130,7 @@ class SettingsDialog(QDialog):
         msg_box.setText(about_text)
         msg_box.setIcon(QMessageBox.Icon.Information)
         msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
-        
+
         # Estilos para que combine con la app
         msg_box.setStyleSheet("""
             QMessageBox {
@@ -93,6 +159,11 @@ class SettingsDialog(QDialog):
     def save_and_accept(self):
         """Guarda la configuración y cierra el diálogo."""
         self.settings['sound_muted'] = self.mute_checkbox.isChecked()
+        if self.japanese_radio.isChecked():
+            self.settings['multiplication_method'] = 'japanese'
+        else:
+            self.settings['multiplication_method'] = 'traditional'
+
         try:
             if 'handedness' not in self.settings:
                  self.settings['handedness'] = 'right'
@@ -101,6 +172,6 @@ class SettingsDialog(QDialog):
             print("Configuración guardada.")
         except IOError as e:
             print(f"Error al guardar la configuración: {e}")
-        
+
         self.accept()
 

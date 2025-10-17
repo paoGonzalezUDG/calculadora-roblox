@@ -1,4 +1,5 @@
 {
-    "handedness": "left",
-    "sound_muted": false
+    "handedness": "right",
+    "sound_muted": false,
+    "multiplication_method": "japanese"
 }

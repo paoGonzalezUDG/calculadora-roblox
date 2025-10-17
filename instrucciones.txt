@@ -1,8 +1,8 @@
-Librerias instaladas
+Librerías instaladas
     pip install PyQt6
-    Imagenes
+    Imágenes
         pip install Pillow
-    Reconocimiento de voz y 
+    Reconocimiento de voz y
         pip install SpeechRecognition PyAudio
     Capturar audio del micrófono y realizar cálculos numéricos con los datos del audio de forma eficiente.
         pip install sounddevice numpy
