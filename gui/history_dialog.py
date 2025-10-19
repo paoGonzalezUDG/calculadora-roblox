@@ -3,6 +3,7 @@ import os
 from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QTableWidget, QTableWidgetItem,
                              QPushButton, QHeaderView)
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QColor
 
 HISTORY_FILE = "mission_history.csv"
 
@@ -14,7 +15,7 @@ class HistoryDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Historial de Misiones")
         self.setModal(True)
-        self.setMinimumSize(750, 400)
+        self.setMinimumSize(960, 500)
 
         layout = QVBoxLayout(self)
 
@@ -27,7 +28,6 @@ class HistoryDialog(QDialog):
 
         self.load_history_data()
 
-        # Aplicar estilos similares al resto de la app
         if parent:
             self.setStyleSheet(parent.styleSheet())
 
@@ -38,7 +38,8 @@ class HistoryDialog(QDialog):
                 font-family: "Gill Sans";
             }
             QHeaderView::section {
-                background-color: #4D5054;
+                /* 2. Cambiar color de fondo del encabezado a azul */
+                background-color: #0078D7;
                 color: white;
                 padding: 4px;
                 border: 1px solid #2A2C2E;
@@ -71,30 +72,51 @@ class HistoryDialog(QDialog):
                     self.table_widget.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
                     return
 
-                headers = reader[0]
+                headers_original = reader[0]
                 data_rows = reader[1:]
 
-                self.table_widget.setColumnCount(len(headers))
-                self.table_widget.setHorizontalHeaderLabels(headers)
+                # 2. Modificar encabezados para que se ajusten en dos líneas
+                headers_display = [
+                    "Fecha y\nHora", "Texto de la\nMisión", "Respuesta\ndel Usuario",
+                    "Respuesta\nCorrecta", "Resultado", "Tipo de\nOperación"
+                ]
+
+                if len(headers_display) != len(headers_original):
+                    headers_display = headers_original
+
+                self.table_widget.setColumnCount(len(headers_original))
+                self.table_widget.setHorizontalHeaderLabels(headers_display)
                 self.table_widget.setRowCount(len(data_rows))
+
+                # Ajustar altura y alineación del encabezado
+                self.table_widget.horizontalHeader().setFixedHeight(50)
+                # CORRECCIÓN: Se elimina Qt.AlignmentFlag.TextWordWrap que causaba el error.
+                self.table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignmentFlag.AlignCenter)
+
 
                 for row_idx, row_data in enumerate(data_rows):
                     for col_idx, cell_data in enumerate(row_data):
                         item = QTableWidgetItem(cell_data)
-                        if headers[col_idx] == "Resultado":
+                        if headers_original[col_idx] == "Resultado":
                             if "Correcto" in cell_data:
-                                item.setForeground(QColor("#33FF33")) # Verde brillante
+                                item.setForeground(QColor("#33FF33"))
                             elif "Incorrecto" in cell_data:
-                                item.setForeground(QColor("#FF3333")) # Rojo brillante
+                                item.setForeground(QColor("#FF3333"))
                         self.table_widget.setItem(row_idx, col_idx, item)
 
                 header = self.table_widget.horizontalHeader()
-                try:
-                    mission_text_index = headers.index("Texto de la Mision")
-                except ValueError:
-                    mission_text_index = 1
 
-                for i in range(len(headers)):
+                mission_text_index = -1
+                try:
+                    # Buscar por el texto original del encabezado
+                    mission_text_index = headers_original.index("Texto de la Misión")
+                except ValueError:
+                    try:
+                        mission_text_index = headers_original.index("Texto de la Mision") # Fallback para CSVs antiguos
+                    except ValueError:
+                         mission_text_index = 1 # Último recurso
+
+                for i in range(len(headers_original)):
                     if i == mission_text_index:
                         header.setSectionResizeMode(i, QHeaderView.ResizeMode.Stretch)
                     else:

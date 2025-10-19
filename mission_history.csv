@@ -1,3 +1,24 @@
 ﻿Fecha y Hora,Texto de la Mision,Respuesta del Usuario,Respuesta Correcta,Resultado,Tipo de Operacion
-2025-10-06 20:48:25,En un obby hay 80 obstáculos. Ya pasaste 65. ¿Cuántos faltan?,5,15,Incorrecto,Resta
-2025-10-06 20:48:42,"Si ganas 25 Robux cada vez que completas una misión y completas 4, ¿cuántos Robux ganas?",100,100,Correcto,Multiplicación
+2025-10-18 17:26:54,"Tu mascota necesita 250 bucks para una poción. Si ya tienes 175, ¿cuánto falta?",75,75,Correcto,Resta
+2025-10-18 17:27:08,"Una casa en 'Brookhaven' cuesta 800. Si tienes 1/2 del dinero, ¿cuánto dinero tienes?",400,400,Correcto,Fracción
+2025-10-18 17:27:30,En un obby hay 80 obstáculos. Ya pasaste 65. ¿Cuántos faltan?,15,15,Correcto,Resta
+2025-10-18 17:28:50,"En 'Jailbreak', escapas de la prisión 5 veces en un día. Si cada escape te da 150 de dinero, ¿cuánto ganaste?",350,750,Incorrecto,Multiplicación
+2025-10-18 17:29:05,"Necesitas 15 librerías para tu mesa de encantamientos. Si ya tienes 8, ¿cuántas te faltan?",7,7,Correcto,Resta
+2025-10-18 17:56:24,En un obby hay 80 obstáculos. Ya pasaste 65. ¿Cuántos faltan?,15,15,Correcto,Resta
+2025-10-18 17:56:35,"Un portal al Nether necesita 10 de obsidiana. Si tienes 3 portales, ¿cuánta obsidiana usaste?",7,30,Incorrecto,Multiplicación
+2025-10-18 17:56:54,En una carrera avanzas 60 metros. Otro jugador avanza 45. ¿Cuántos metros más avanzaste?,15,15,Correcto,Resta
+2025-10-18 17:57:41,"Un portal al Nether necesita 10 de obsidiana. Si tienes 3 portales, ¿cuánta obsidiana usaste?",30,30,Correcto,Multiplicación
+2025-10-18 17:57:59,"En 'Bloxburg', una pizza cuesta 24 dólares. Si pagas con un billete de 50, ¿cuánto cambio te deben dar?",26,26,Correcto,Resta
+2025-10-18 17:58:20,"Una poción de velocidad cuesta 50 Robux. Si quieres comprar una para ti y para tus 3 amigos, ¿cuántos Robux necesitas?",200,200,Correcto,Multiplicación
+2025-10-18 18:21:21,"Necesitas 15 librerías para tu mesa de encantamientos. Si ya tienes 8, ¿cuántas te faltan?",12,7,Incorrecto,Resta
+2025-10-18 18:21:34,"En 'Brookhaven' una casa cuesta 750 bucks. Si ya tienes 500, ¿cuánto más necesitas?",250,250,Correcto,Resta
+2025-10-18 18:21:55,Un aldeano zombi tarda 4 minutos en curarse. ¿Cuántos segundos son?,240,240,Correcto,Multiplicación
+2025-10-18 18:22:21,"Necesitas 15 librerías para tu mesa de encantamientos. Si ya tienes 8, ¿cuántas te faltan?",7,7,Correcto,Resta
+2025-10-18 20:13:36,"Si cada caja trae 12 pociones y compras 4 cajas, ¿cuántas pociones tienes?",48,48,Correcto,Multiplicación
+2025-10-18 20:13:47,"Un stack de huevos contiene 16 huevos. Si tienes 4 stacks, ¿cuántos huevos tienes?",54,64,Incorrecto,Multiplicación
+2025-10-18 20:13:59,"En un servidor hay 18 jugadores. Si 7 se van, ¿cuántos quedan?",11,11,Correcto,Resta
+2025-10-18 20:14:30,"Una casa en 'Brookhaven' cuesta 800. Si tienes 1/2 del dinero, ¿cuánto dinero tienes?",400,400,Correcto,Fracción
+2025-10-18 21:08:10,"Para hacer una espada de diamante necesitas 2 diamantes. Si encuentras 14 diamantes, ¿cuántas espadas puedes hacer?",28,7,Incorrecto,División
+2025-10-18 21:08:28,"Hay 24 cupcakes en la cocina. Si Chica los reparte entre 6 niños, ¿cuántos le tocan a cada uno?",4,4,Correcto,División
+2025-10-18 21:08:42,"Un huevo de mascota cuesta 600 bucks. Si compras 2, ¿cuánto pagas en total?",1200,1200,Correcto,Multiplicación
+2025-10-18 21:09:03,"Para hacer un pastel necesitas 3 de trigo. Si tu granja produce 21 de trigo, ¿cuántos pasteles puedes hacer?",7,7,Correcto,División

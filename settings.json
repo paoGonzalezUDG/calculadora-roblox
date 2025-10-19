@@ -1,5 +1,6 @@
 {
     "handedness": "right",
     "sound_muted": false,
-    "multiplication_method": "japanese"
+    "multiplication_method": "japanese",
+    "division_method": "traditional"
 }

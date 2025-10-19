@@ -13,17 +13,19 @@ class RewardManager:
             try:
                 with open(self.save_file, 'r') as f:
                     loaded_data = json.load(f)
-                    
+
                     if "rewards" not in loaded_data:
                         loaded_data["rewards"] = {"oof_sound": False}
                     if "total_robux" not in loaded_data:
                         loaded_data["total_robux"] = 0
+                    if "missions_completed" not in loaded_data:
+                        loaded_data["missions_completed"] = 0
                     return loaded_data
             except (json.JSONDecodeError, IOError):
-                return {"rewards": {"oof_sound": False}, "total_robux": 0}
+                return {"rewards": {"oof_sound": False}, "total_robux": 0, "missions_completed": 0}
         else:
-            
-            return {"rewards": {"oof_sound": False}, "total_robux": 0}
+
+            return {"rewards": {"oof_sound": False}, "total_robux": 0, "missions_completed": 0}
 
     def _save_data(self):
         """Guarda el estado actual de los datos en el archivo JSON."""
@@ -42,19 +44,28 @@ class RewardManager:
     def is_unlocked(self, reward_id):
         """Comprueba si una recompensa está desbloqueada."""
         return self.data["rewards"].get(reward_id, False)
-    
+
     def add_robux(self, amount):
         """Añade o resta una cantidad de Robux al total y guarda."""
         current_robux = self.data.get("total_robux", 0)
         new_total = current_robux + amount
-        
+
         # Evitar que los Robux sean negativos
         self.data["total_robux"] = max(0, new_total)
-        
+
         self._save_data()
         print(f"Se modificaron {amount} Robux. Total: {self.data['total_robux']}")
 
     def get_total_robux(self):
         """Devuelve el total de Robux acumulados."""
         return self.data.get("total_robux", 0)
+
+    def increment_missions_completed(self):
+        """Incrementa el contador de misiones completadas."""
+        self.data["missions_completed"] = self.data.get("missions_completed", 0) + 1
+        self._save_data()
+
+    def get_missions_completed(self):
+        """Devuelve el número de misiones completadas."""
+        return self.data.get("missions_completed", 0)
 

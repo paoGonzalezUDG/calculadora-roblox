@@ -69,12 +69,12 @@ QPushButton[role="function"]:hover {
     background-color: #0078d7;
 }
 
-QPushButton#settingsButton {        
+QPushButton#settingsButton {
     background-color: #8a2be2;
 }
 QPushButton#nightModeButton {
     background-color: #e6b800;
-}           
+}
 
 #MissionLabel {
     font-size: 12pt;
@@ -111,4 +111,9 @@ QPushButton#nightModeButton {
     background-color: #2A2C2E;
     border-radius: 8px;
     padding: 10px;
+}
+#WelcomeFactLabel {
+    font-family: "Gill Sans Ultra Bold";
+    font-size: 12pt;
+    color: #CCCCCC;
 }

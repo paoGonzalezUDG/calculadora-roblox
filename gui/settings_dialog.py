@@ -1,177 +1,251 @@
 import json
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QCheckBox, QPushButton, QHBoxLayout, QMessageBox, QFrame, QWidget, QGroupBox, QRadioButton
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QPushButton,
+                             QCheckBox, QLabel, QGroupBox, QRadioButton,
+                             QDialogButtonBox, QWidget, QFrame)
+from PyQt6.QtCore import Qt, QPoint, QSize
+from PyQt6.QtGui import QFont, QMovie
+from .evaluation_dialog import EvaluationDialog
 
 SETTINGS_FILE = 'settings.json'
 
+class CustomSettingsTitleBar(QWidget):
+    """Una barra de título personalizada para el diálogo de configuraciones."""
+    def __init__(self, title, parent_dialog=None):
+        super().__init__(parent_dialog)
+        self.parent_dialog = parent_dialog
+        self.setObjectName("CustomSettingsTitleBar")
+        self.setFixedHeight(45)
+
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(10, 0, 5, 0)
+
+        self.icon_label = QLabel(self)
+        self.icon_movie = QMovie("assets/images/settings_cog.gif")
+        if self.icon_movie.isValid():
+            self.icon_movie.setScaledSize(QSize(35, 35))
+            self.icon_label.setMovie(self.icon_movie)
+            self.icon_movie.start()
+
+        self.title_label = QLabel(title, self)
+        self.title_label.setFont(QFont("Gill Sans Ultra Bold", 12))
+        self.title_label.setObjectName("TitleBarLabel")
+
+        layout.addWidget(self.icon_label)
+        layout.addWidget(self.title_label)
+        layout.addStretch()
+
+        self.close_button = QPushButton("✕")
+        self.close_button.setFixedSize(30, 30)
+        self.close_button.setObjectName("TitleBarButtonClose")
+        if self.parent_dialog:
+            self.close_button.clicked.connect(self.parent_dialog.reject)
+
+        layout.addWidget(self.close_button)
+
 class SettingsDialog(QDialog):
-    """Una ventana emergente para las configuraciones de la aplicación."""
-    def __init__(self, parent=None):
+    """Ventana de configuraciones con barra de título personalizada."""
+    def __init__(self, current_settings, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Configuraciones")
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.old_pos = None
+
         self.setModal(True)
-        self.setMinimumSize(450, 280) # Aumentamos el tamaño mínimo para la nueva sección
+        self.setMinimumWidth(500)
 
-        try:
-            with open(SETTINGS_FILE, 'r') as f:
-                self.settings = json.load(f)
-        except (IOError, json.JSONDecodeError):
-            self.settings = {}
+        self.settings = current_settings
 
-        # Layout principal
-        main_layout = QVBoxLayout(self)
+        main_container = QFrame(self)
+        main_container.setObjectName("SettingsDialogContainer")
 
-        # Layout de contenido (dividido en izquierda y derecha)
-        content_layout = QHBoxLayout()
+        main_layout = QVBoxLayout(main_container)
+        main_layout.setContentsMargins(1, 1, 1, 1)
+        main_layout.setSpacing(0)
 
-        # --- Panel Izquierdo ---
-        left_panel = QWidget()
-        left_layout = QVBoxLayout(left_panel)
-        left_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.title_bar = CustomSettingsTitleBar("Configuraciones", self)
 
-        self.about_button = QPushButton("Acerca de")
-        self.about_button.clicked.connect(self._show_about_dialog)
+        content_widget = QWidget()
+        content_layout = QVBoxLayout(content_widget)
+        content_layout.setContentsMargins(15, 10, 15, 15)
 
-        self.history_button = QPushButton("Historial")
-        self.history_button.clicked.connect(self._show_history_dialog)
+        # --- Grupo de Accesibilidad ---
+        accessibility_group = QGroupBox("Accesibilidad")
+        accessibility_layout = QVBoxLayout()
+        self.dyslexia_mode_checkbox = QCheckBox("Activar modo para dislexia (requiere reiniciar)")
+        self.dyslexia_mode_checkbox.setChecked(self.settings.get('dyslexia_mode', False))
+        accessibility_layout.addWidget(self.dyslexia_mode_checkbox)
+        accessibility_group.setLayout(accessibility_layout)
 
-        # Nuevo GroupBox para métodos de aprendizaje
-        self.multiplication_method_group = QGroupBox("Métodos de Multiplicación")
-        self.multiplication_method_group.setObjectName("MultiplicationMethodGroup")
-        method_layout = QVBoxLayout()
-
-        self.traditional_radio = QRadioButton("Tradicional (Grupos)")
-        self.traditional_radio.setObjectName("TraditionalRadio")
-        self.japanese_radio = QRadioButton("Japonés (Líneas)")
-        self.japanese_radio.setObjectName("JapaneseRadio")
-
-        method_layout.addWidget(self.traditional_radio)
-        method_layout.addWidget(self.japanese_radio)
-        self.multiplication_method_group.setLayout(method_layout)
-
-        # Establecer selección inicial
-        current_method = self.settings.get('multiplication_method', 'traditional')
-        if current_method == 'japanese':
-            self.japanese_radio.setChecked(True)
-        else:
-            self.traditional_radio.setChecked(True)
-
-        left_layout.addWidget(self.about_button)
-        left_layout.addWidget(self.history_button)
-        left_layout.addWidget(self.multiplication_method_group) # Añadir el nuevo grupo
-
-        # --- Separador Vertical ---
-        separator = QFrame()
-        separator.setFrameShape(QFrame.Shape.VLine)
-        separator.setFrameShadow(QFrame.Shadow.Sunken)
-
-        # --- Panel Derecho ---
-        right_panel = QWidget()
-        right_layout = QVBoxLayout(right_panel)
-        right_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-
+        # --- Grupo de Sonido ---
+        sound_group = QGroupBox("Sonido")
+        sound_layout = QVBoxLayout()
         self.mute_checkbox = QCheckBox("Silenciar todos los sonidos")
-        is_muted = self.settings.get('sound_muted', False)
-        self.mute_checkbox.setChecked(is_muted)
+        self.mute_checkbox.setChecked(self.settings.get('sound_muted', False))
+        sound_layout.addWidget(self.mute_checkbox)
+        sound_group.setLayout(sound_layout)
 
-        right_layout.addWidget(self.mute_checkbox)
-
-        # Añadir paneles al layout de contenido
-        content_layout.addWidget(left_panel)
-        content_layout.addWidget(separator)
-        content_layout.addWidget(right_panel)
-
-        # --- Layout de botones inferiores ---
-        bottom_buttons_layout = QHBoxLayout()
-        bottom_buttons_layout.addStretch() # Empuja los botones a la derecha
-
-        self.cancel_button = QPushButton("Cancelar")
-        self.cancel_button.clicked.connect(self.reject)
-
-        self.save_button = QPushButton("Guardar")
-        self.save_button.clicked.connect(self.save_and_accept)
-
-        bottom_buttons_layout.addWidget(self.cancel_button)
-        bottom_buttons_layout.addWidget(self.save_button)
-
-        # Añadir todo al layout principal
-        main_layout.addLayout(content_layout)
-        main_layout.addStretch()
-        main_layout.addLayout(bottom_buttons_layout)
-
-        if parent:
-            self.setStyleSheet(parent.styleSheet())
-
-        # Ajustes de estilo adicionales si son necesarios
-        self.about_button.setMinimumHeight(35)
-        self.history_button.setMinimumHeight(35)
-        self.multiplication_method_group.setMinimumHeight(100) # Ajustar altura del grupo
-        self.traditional_radio.setStyleSheet("QRadioButton { color: white; }")
-        self.japanese_radio.setStyleSheet("QRadioButton { color: white; }")
-
-    def _show_history_dialog(self):
-        """Crea y muestra el diálogo del historial."""
-        from gui.history_dialog import HistoryDialog # Importación local para evitar circular
-        history_dialog = HistoryDialog(self)
-        history_dialog.exec()
-
-    def _show_about_dialog(self):
-        """Muestra una ventana emergente con la información 'Acerca de'."""
-        about_text = """
-        <h3>Acerca de Sofia calc</h3>
-        <p>Esta calculadora con temática Roblox ha sido diseñada especialmente para niños y niñas de 8 a 13 años, buscando hacer del aprendizaje matemático una experiencia divertida e interactiva. Cuenta con misiones, minijuegos y un diseño accesible tanto para personas diestras como zurdas.</p>
-        <p>El objetivo principal es fomentar la práctica de las operaciones básicas mientras se mantiene la motivación mediante recompensas virtuales y un entorno visual inspirado en Roblox.</p>
-        <p><b>Desarrollada por:</b> Paola González Delgado<br>
-        <b>Año:</b> 2025</p>
-        """
-        msg_box = QMessageBox(self)
-        msg_box.setWindowTitle("Acerca de")
-        msg_box.setTextFormat(Qt.TextFormat.RichText)
-        msg_box.setText(about_text)
-        msg_box.setIcon(QMessageBox.Icon.Information)
-        msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
-
-        # Estilos para que combine con la app
-        msg_box.setStyleSheet("""
-            QMessageBox {
-                font-family: "Gill Sans Ultra Bold";
-            }
-            QMessageBox QLabel {
-                color: #FFFFFF;
-                font-size: 11pt;
-            }
-            QMessageBox QPushButton {
-                background-color: #00A2FF;
-                color: #FFFFFF;
-                border: none;
-                border-radius: 5px;
-                padding: 8px 15px;
-                font-weight: bold;
-                font-size: 12pt;
-                min-width: 80px;
-            }
-            QMessageBox QPushButton:hover {
-                background-color: #33B5FF;
-            }
-        """)
-        msg_box.exec()
-
-    def save_and_accept(self):
-        """Guarda la configuración y cierra el diálogo."""
-        self.settings['sound_muted'] = self.mute_checkbox.isChecked()
-        if self.japanese_radio.isChecked():
-            self.settings['multiplication_method'] = 'japanese'
+        # --- Grupo de Visualización ---
+        display_group = QGroupBox("Método de Visualización")
+        display_layout = QVBoxLayout()
+        multiplication_label = QLabel("Multiplicación:")
+        self.mult_tradicional = QRadioButton("Tradicional (Grupos)")
+        self.mult_japones = QRadioButton("Japonés (Líneas)")
+        if self.settings.get('multiplication_method', 'traditional') == 'japanese':
+            self.mult_japones.setChecked(True)
         else:
-            self.settings['multiplication_method'] = 'traditional'
+            self.mult_tradicional.setChecked(True)
+        mult_layout = QHBoxLayout()
+        mult_layout.addWidget(self.mult_tradicional)
+        mult_layout.addWidget(self.mult_japones)
+        division_label = QLabel("División:")
+        self.div_tradicional = QRadioButton("Tradicional (Agrupación)")
+        self.div_japones = QRadioButton("Japonés (Líneas)")
+        if self.settings.get('division_method', 'traditional') == 'japanese':
+            self.div_japones.setChecked(True)
+        else:
+            self.div_tradicional.setChecked(True)
+        div_layout = QHBoxLayout()
+        div_layout.addWidget(self.div_tradicional)
+        div_layout.addWidget(self.div_japones)
+        display_layout.addWidget(multiplication_label)
+        display_layout.addLayout(mult_layout)
+        display_layout.addWidget(division_label)
+        display_layout.addLayout(div_layout)
+        display_group.setLayout(display_layout)
+
+        # --- Grupo de Progreso ---
+        evaluation_group = QGroupBox("Seguimiento del Progreso")
+        evaluation_layout = QVBoxLayout()
+        self.evaluation_button = QPushButton("📊 Ver Evaluación de Dominio")
+        self.evaluation_button.clicked.connect(self.show_evaluation)
+        evaluation_layout.addWidget(self.evaluation_button)
+        evaluation_group.setLayout(evaluation_layout)
+
+        content_layout.addWidget(accessibility_group)
+        content_layout.addWidget(sound_group)
+        content_layout.addWidget(display_group)
+        content_layout.addWidget(evaluation_group)
+
+        # --- Botones de Acción ---
+        button_box = QDialogButtonBox()
+        self.about_button = button_box.addButton("Acerca de", QDialogButtonBox.ButtonRole.HelpRole)
+        self.about_button.clicked.connect(self.show_about_dialog)
+        button_box.addButton("Cancelar", QDialogButtonBox.ButtonRole.RejectRole).clicked.connect(self.reject)
+        button_box.addButton("Guardar", QDialogButtonBox.ButtonRole.AcceptRole).clicked.connect(self.accept_settings)
+        content_layout.addWidget(button_box, alignment=Qt.AlignmentFlag.AlignRight)
+
+        main_layout.addWidget(self.title_bar)
+        main_layout.addWidget(content_widget)
+
+        dialog_layout = QVBoxLayout(self)
+        dialog_layout.addWidget(main_container)
+
+        # --- Lógica para aplicar el estilo correcto ---
+        theme = 'dark' # Por defecto
+        if parent:
+            parent_bg_color = parent.palette().window().color()
+            if parent_bg_color.lightness() > 128: # Detecta si el fondo es claro
+                theme = 'light'
+        self._apply_styles(theme)
+
+    def _apply_styles(self, theme):
+        """Aplica la hoja de estilos correcta según el tema."""
+        light_stylesheet = """
+            #SettingsDialogContainer {
+                background-color: #FDFDFD;
+                border: 1px solid #CCCCCC;
+                border-radius: 8px;
+            }
+            #CustomSettingsTitleBar {
+                /* CORRECCIÓN: Usar el mismo color que el contenedor */
+                background-color: #FDFDFD;
+                border-bottom: 1px solid #E0E0E0;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+            }
+            #TitleBarLabel { color: #000000; }
+            QGroupBox { color: #000000; font-weight: bold; }
+            QCheckBox, QRadioButton, QLabel { color: #000000; }
+            #TitleBarButtonClose {
+                font-family: "Arial"; font-size: 14pt; font-weight: bold;
+                background-color: transparent; border: none; color: #555555;
+            }
+            #TitleBarButtonClose:hover { background-color: #E81123; color: white; }
+        """
+
+        dark_stylesheet = """
+            #SettingsDialogContainer {
+                background-color: #2A2C2E;
+                border: 1px solid #111;
+                border-radius: 8px;
+            }
+            #CustomSettingsTitleBar {
+                background-color: #2A2C2E;
+                border-bottom: 1px solid #3c3c3c;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+            }
+            #TitleBarLabel { color: #CCCCCC; }
+            QGroupBox { color: #EEEEEE; font-weight: bold; }
+            QCheckBox, QRadioButton, QLabel { color: #DDDDDD; }
+            #TitleBarButtonClose {
+                font-family: "Arial"; font-size: 14pt; font-weight: bold;
+                background-color: transparent; border: none; color: #AAA;
+            }
+            #TitleBarButtonClose:hover { background-color: #E81123; color: white; }
+        """
+
+        if theme == 'light':
+            self.setStyleSheet(light_stylesheet)
+        else: # dark
+            self.setStyleSheet(dark_stylesheet)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton and self.title_bar.underMouse():
+            self.old_pos = event.globalPosition().toPoint()
+
+    def mouseMoveEvent(self, event):
+        if self.old_pos:
+            delta = QPoint(event.globalPosition().toPoint() - self.old_pos)
+            self.move(self.x() + delta.x(), self.y() + delta.y())
+            self.old_pos = event.globalPosition().toPoint()
+
+    def mouseReleaseEvent(self, event):
+        self.old_pos = None
+
+    def show_evaluation(self):
+        dialog = EvaluationDialog(self)
+        dialog.exec()
+
+    def show_about_dialog(self):
+        about_dialog = QDialog(self)
+        about_dialog.setWindowTitle("Acerca de Sofía Calc")
+        layout = QVBoxLayout()
+        message = QLabel(
+            "<b>Calculadora Sofía Calc</b><br><br>"
+            "Diseñada para hacer del aprendizaje de las matemáticas una "
+            "experiencia divertida e interactiva para niños de 8 a 13 años."
+            "<br><br><b>Desarrollado por:</b> Paola González Delgado"
+            "<br><b>Año:</b> 2025"
+        )
+        message.setWordWrap(True)
+        layout.addWidget(message)
+        ok_button = QPushButton("OK")
+        ok_button.clicked.connect(about_dialog.accept)
+        layout.addWidget(ok_button)
+        about_dialog.setLayout(layout)
+        about_dialog.exec()
+
+    def accept_settings(self):
+        self.settings['sound_muted'] = self.mute_checkbox.isChecked()
+        self.settings['multiplication_method'] = 'japanese' if self.mult_japones.isChecked() else 'traditional'
+        self.settings['division_method'] = 'japanese' if self.div_japones.isChecked() else 'traditional'
+        self.settings['dyslexia_mode'] = self.dyslexia_mode_checkbox.isChecked()
 
         try:
-            if 'handedness' not in self.settings:
-                 self.settings['handedness'] = 'right'
             with open(SETTINGS_FILE, 'w') as f:
                 json.dump(self.settings, f, indent=4)
-            print("Configuración guardada.")
-        except IOError as e:
-            print(f"Error al guardar la configuración: {e}")
-
+        except Exception as e:
+            print(f"Error al guardar las configuraciones: {e}")
         self.accept()
 
